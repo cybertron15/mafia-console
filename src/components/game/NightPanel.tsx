@@ -112,7 +112,8 @@ export function NightPanel({
       const n = g.night;
       const next = n.callOrder[n.calledIndex];
       const p = g.players.find((x) => x.number === next);
-      const mafiaNoAction = p?.role === "mafia";
+      const mafiaNoAction = p?.alive && p.role === "mafia";
+      const ghostTurn = p && !p.alive;
       const g2 = { ...g, night: { ...n, calledIndex: n.calledIndex + 1 } };
       return {
         ...g2,
@@ -123,8 +124,12 @@ export function NightPanel({
             phase: "night" as const,
             text: `Called number ${next}${
               p
-                ? ` — ${p.name} (${ROLE_META[p.role].label})${p.alive ? "" : " · dead"}${
-                    mafiaNoAction ? " · eyes only, no action" : ""
+                ? ` — ${p.name} (${ROLE_META[p.role].label})${
+                    ghostTurn
+                      ? " · 👻 Ghost signals"
+                      : mafiaNoAction
+                        ? " · eyes only, no action"
+                        : ""
                   }`
                 : ""
             }`,
@@ -315,20 +320,29 @@ export function NightPanel({
               )}
             </div>
             {currentPlayer && !allCalled && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                Next up: <b className="text-foreground">{currentPlayer.name}</b> (
-                {ROLE_META[currentPlayer.role].label})
-                {currentPlayer.role === "mafia" && (
-                  <span className="text-mafia"> — eyes open only, no kill action</span>
-                )}
-                {currentPlayer.role === "citizen" && <span> — remain silent, then close eyes</span>}
-                {currentPlayer.role === "detective" && (
-                  <span className="text-detective"> — point at one player to investigate</span>
-                )}
-                {currentPlayer.role === "doctor" && (
-                  <span className="text-doctor"> — point at one player to protect</span>
-                )}
-              </p>
+              <>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Next up: <b className="text-foreground">{currentPlayer.name}</b> (
+                  {ROLE_META[currentPlayer.role].label}
+                  {!currentPlayer.alive ? " · Ghost" : ""})
+                  {currentPlayer.alive && currentPlayer.role === "mafia" && (
+                    <span className="text-mafia"> — eyes open only, no kill action</span>
+                  )}
+                  {currentPlayer.alive && currentPlayer.role === "citizen" && (
+                    <span> — remain silent, then close eyes</span>
+                  )}
+                  {currentPlayer.alive && currentPlayer.role === "detective" && (
+                    <span className="text-detective"> — point at one player to investigate</span>
+                  )}
+                  {currentPlayer.alive && currentPlayer.role === "doctor" && (
+                    <span className="text-doctor"> — point at one player to protect</span>
+                  )}
+                  {!currentPlayer.alive && (
+                    <span className="text-ghost"> — open eyes and use ghost signals</span>
+                  )}
+                </p>
+                {!currentPlayer.alive && <GhostSignalsGuide compact aliveCount={alive.length} />}
+              </>
             )}
           </>
         )}

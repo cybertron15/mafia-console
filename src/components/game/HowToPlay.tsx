@@ -49,16 +49,7 @@ const CAST: Cast[] = [
 ];
 
 type StepId =
-  | "hook"
-  | "teams"
-  | "loop"
-  | "night"
-  | "day"
-  | "ghost"
-  | "signals"
-  | "spirit"
-  | "win"
-  | "demo";
+  "hook" | "teams" | "loop" | "night" | "day" | "ghost" | "signals" | "spirit" | "win" | "demo";
 
 const STEPS: { id: StepId; label: string }[] = [
   { id: "hook", label: "Start" },

@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ROLE_META, type Game, type Player } from "@/lib/game";
+import { GhostSignalsGuide } from "@/components/game/GhostSignalsGuide";
 import { Ghost, Sparkles, Undo2 } from "lucide-react";
 
 type Power = {
@@ -132,6 +133,18 @@ export function GhostPanel({
         <Ghost className="size-5 text-ghost" />
         <h3 className="text-xl">The Afterlife</h3>
       </div>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Ghosts signal you at night when their number is called. Record bets and messages here.
+      </p>
+
+      <details className="mt-3 rounded-lg border border-ghost/30 bg-ghost/5 p-3">
+        <summary className="cursor-pointer text-sm font-medium text-ghost">
+          Ghost ↔ host signal cheat sheet
+        </summary>
+        <div className="mt-3 [&_h3]:text-lg">
+          <GhostSignalsGuide aliveCount={alive.length} />
+        </div>
+      </details>
 
       <div className="mt-4 space-y-3">
         {ghosts.map((g: Player) => (
@@ -150,10 +163,18 @@ export function GhostPanel({
             </div>
 
             <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
-              <Button size="sm" variant="secondary" onClick={() => addSpirit(g.id, 2, "correct victim prediction")}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => addSpirit(g.id, 2, "correct victim prediction")}
+              >
                 +2 victim
               </Button>
-              <Button size="sm" variant="secondary" onClick={() => addSpirit(g.id, 2, "correct vote-out prediction")}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => addSpirit(g.id, 2, "correct vote-out prediction")}
+              >
                 +2 vote-out
               </Button>
               <Button
@@ -177,7 +198,11 @@ export function GhostPanel({
                   <Undo2 className="size-3" /> Undo role guess
                 </Button>
               )}
-              <Button size="sm" variant="ghost" onClick={() => addSpirit(g.id, -2, "manual adjust")}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => addSpirit(g.id, -2, "manual adjust")}
+              >
                 −2
               </Button>
               <Button
@@ -195,8 +220,8 @@ export function GhostPanel({
             {openId === g.id && (
               <div className="mt-3 rounded-md border border-border bg-secondary/30 p-3">
                 <p className="text-xs text-muted-foreground">
-                  Pick living players ({targets.length}/3 selected), then choose how{" "}
-                  {g.name} spends their {g.spirit} spirit.
+                  Pick living players ({targets.length}/3 selected), then choose how {g.name} spends
+                  their {g.spirit} spirit.
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {alive.map((p) => (
@@ -219,7 +244,9 @@ export function GhostPanel({
                     const affordable = g.spirit >= pw.cost;
                     const ok = countOk && affordable;
                     const preview = pw.build(
-                      countOk ? targets : Array.from({ length: pw.min }, (_, i) => `Player ${i + 1}`),
+                      countOk
+                        ? targets
+                        : Array.from({ length: pw.min }, (_, i) => `Player ${i + 1}`),
                       game.players,
                     );
                     return (
@@ -277,16 +304,13 @@ export function GhostPanel({
         ))}
       </div>
 
-      <AlertDialog
-        open={!!confirmReverse}
-        onOpenChange={(o) => !o && setConfirmReverse(null)}
-      >
+      <AlertDialog open={!!confirmReverse} onOpenChange={(o) => !o && setConfirmReverse(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Undo the hidden-role guess?</AlertDialogTitle>
             <AlertDialogDescription>
-              This gives {confirmReverse?.name} their one-time role guess back and removes
-              any spirit it awarded. Use it only to fix a mistake.
+              This gives {confirmReverse?.name} their one-time role guess back and removes any
+              spirit it awarded. Use it only to fix a mistake.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

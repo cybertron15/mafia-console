@@ -121,7 +121,12 @@ Night actions are **silent**: players point; the host confirms with thumbs up / 
 
 ### 4. Afterlife (Ghosts)
 
-Ghosts keep their original team allegiance (Mafia Ghosts help Mafia; others help Citizens). They earn Spirit Energy from correct predictions and spend it on cryptic templates (Murmur, Omen, Revelation, etc.). They do not vote or speak about the game.
+Ghosts keep their original team allegiance (Mafia Ghosts help Mafia; others help Citizens). At night, when their number is called, they open their eyes and signal the host silently:
+
+- **Palm tap** → place a bet (kill slash / vote flick / point-to-face for role)
+- **Message sign** → spend Spirit (show 1–2–3 fingers; host crossed arms = not enough Spirit; 👍 = ok; then point three names). Disabled when ≤3 living players remain.
+
+Host role answers for identity bets: kill slash = Mafia, hand plus = Doctor, no gesture = Citizen. They do not vote or speak about the game aloud.
 
 ### 5. Win
 

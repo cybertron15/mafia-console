@@ -34,12 +34,7 @@ export function GhostSignalsGuide({
           <li>
             <b className="text-foreground">Message:</b> show 1 / 2 / 3 fingers → crossed arms = not
             enough spirit, 👍 = ok → then they point 3 names
-            {messagesLocked && (
-              <span className="text-destructive">
-                {" "}
-                · locked (≤3 alive)
-              </span>
-            )}
+            {messagesLocked && <span className="text-destructive"> · locked (≤3 alive)</span>}
           </li>
         </ul>
       </div>
@@ -132,7 +127,9 @@ export function GhostSignalsGuide({
             <b className="text-foreground">thumbs up</b> = request accepted.
           </li>
           <li className="rounded-xl border border-border bg-secondary/30 p-3">
-            <b className="text-foreground">4.</b> If accepted, point at <b className="text-foreground">three living names</b>. The host later reads the cryptic line to the table.
+            <b className="text-foreground">4.</b> If accepted, point at{" "}
+            <b className="text-foreground">three living names</b>. The host later reads the cryptic
+            line to the table.
           </li>
         </ol>
       </section>
