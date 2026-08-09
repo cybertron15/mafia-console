@@ -421,9 +421,16 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <main className="min-h-screen px-4 py-8">
       <header className="mx-auto mb-8 max-w-5xl text-center">
-        <h1 className="text-3xl ember-text sm:text-4xl">👁️ Mafia: The Afterlife</h1>
+        <img
+          src="/logo.png"
+          alt="Mafia: The Afterlife"
+          className="mx-auto size-28 rounded-2xl object-cover shadow-[var(--shadow-glow)] sm:size-36"
+          width={144}
+          height={144}
+        />
+        <h1 className="mt-4 text-3xl ember-text sm:text-4xl">Mafia: The Afterlife</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Host console — lie, investigate, betray. Even death isn't the end.
+          Host console — lie, investigate, betray. Even death isn&apos;t the end.
         </p>
       </header>
       <div className="mx-auto max-w-5xl">{children}</div>

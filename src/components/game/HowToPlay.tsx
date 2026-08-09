@@ -135,9 +135,14 @@ export function HowToPlay({ onBack }: { onBack: () => void }) {
 function Hook() {
   return (
     <div className="space-y-5 text-center">
-      <p className="text-4xl" aria-hidden>
-        👁️
-      </p>
+      <img
+        src="/logo.png"
+        alt=""
+        className="mx-auto size-24 rounded-xl object-cover shadow-[var(--shadow-glow)]"
+        width={96}
+        height={96}
+        aria-hidden
+      />
       <div>
         <h3 className="font-display text-2xl sm:text-3xl">Lie. Investigate. Betray.</h3>
         <p className="mt-2 text-lg text-primary">Even death isn&apos;t the end.</p>
@@ -509,8 +514,8 @@ function Spirit() {
 
       <div>
         <p className="mb-2 text-sm text-muted-foreground">
-          At night, signal 1 / 2 / 3 fingers after the message sign. Spend Spirit on a tier (only if
-          more than 3 living players):
+          At night, after the note-writing-on-palm gesture, signal 1 / 2 / 3 fingers. Spend Spirit
+          on a tier (only if more than 3 living players):
         </p>
         <div className="mb-3 flex gap-2">
           {powers.map((power, idx) => (
@@ -653,7 +658,7 @@ const DEMO: DemoBeat[] = [
   {
     title: "Calling #2 — Ghost Meera",
     narrate:
-      "Meera taps her palm (bet), then kill-slashes and points at Sara. Later she mimes a message, holds up 1 finger; host 👍; she points at three names.",
+      "Meera taps her palm (bet), then kill-slashes and points at Sara. Later she note-writes on her palm, holds up 1 finger; host 👍; she points at three names.",
     callNumber: 2,
     glow: ["Meera"],
     dead: ["Meera", "Dev"],

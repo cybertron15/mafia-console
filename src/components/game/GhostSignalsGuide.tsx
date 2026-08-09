@@ -17,8 +17,8 @@ export function GhostSignalsGuide({
       <div className="mt-3 space-y-2 rounded-lg border border-ghost/40 bg-ghost/10 p-3 text-xs">
         <p className="font-display text-sm text-ghost">👻 Ghost turn — silent signals</p>
         <p className="text-muted-foreground">
-          Finger tap on palm = <b className="text-foreground">bet</b>. Mime a message / open note =
-          send cryptic message.
+          Finger tap on palm = <b className="text-foreground">bet</b>. Note-writing on palm ={" "}
+          <b className="text-foreground">cryptic message</b>.
         </p>
         <ul className="space-y-1 text-muted-foreground">
           <li>
@@ -28,15 +28,19 @@ export function GhostSignalsGuide({
             <b className="text-foreground">Vote bet:</b> hand flick + point → you 👍/👎
           </li>
           <li>
-            <b className="text-foreground">Role bet:</b> point own face + point person → reply: kill
-            slash = Mafia, hand plus = Doctor, no gesture = Citizen
+            <b className="text-foreground">Role bet:</b> point own face + point person → you answer
+            with a role sign (below)
           </li>
           <li>
-            <b className="text-foreground">Message:</b> show 1 / 2 / 3 fingers → crossed arms = not
-            enough spirit, 👍 = ok → then they point 3 names
+            <b className="text-foreground">Message:</b> note-writing on palm → 1 / 2 / 3 fingers →
+            crossed arms = not enough spirit, 👍 = ok → they point 3 names
             {messagesLocked && <span className="text-destructive"> · locked (≤3 alive)</span>}
           </li>
         </ul>
+        <p className="pt-1 text-muted-foreground">
+          <b className="text-foreground">Your role answers:</b> kill slash = Mafia · hand plus =
+          Doctor · eye-peek (circle at eye) = Detective · open empty palm = Citizen
+        </p>
       </div>
     );
   }
@@ -59,8 +63,8 @@ export function GhostSignalsGuide({
             prediction.
           </li>
           <li>
-            <b className="text-foreground">Show a “message” sign</b> (mime holding a note / open
-            palm as a letter) — you want to spend Spirit on a cryptic message.
+            <b className="text-foreground">Note-writing gesture on your palm</b> (mime writing on
+            your open hand) — you want to spend Spirit on a cryptic message.
           </li>
         </ul>
       </div>
@@ -79,7 +83,7 @@ export function GhostSignalsGuide({
             },
             {
               t: "🎭 Hidden role (once per game)",
-              d: "Point to your own face, then point at the person whose role you want. Host answers with signals — not words.",
+              d: "Point to your own face, then point at the person whose role you want. Host answers with a role sign — not words.",
             },
           ].map((x) => (
             <article key={x.t} className="rounded-xl border border-border bg-secondary/30 p-3">
@@ -91,7 +95,7 @@ export function GhostSignalsGuide({
 
         <div className="rounded-xl border border-ghost/35 bg-ghost/5 p-3">
           <p className="text-xs font-medium text-ghost">Host role answers</p>
-          <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+          <ul className="mt-2 space-y-1.5 text-xs text-muted-foreground">
             <li>
               <b className="text-foreground">Killing slash</b> → Mafia
             </li>
@@ -99,7 +103,12 @@ export function GhostSignalsGuide({
               <b className="text-foreground">Plus with hands (+)</b> → Doctor
             </li>
             <li>
-              <b className="text-foreground">No gesture</b> → Citizen (including Detective)
+              <b className="text-foreground">Eye-peek</b> (finger circle at your eye, like a
+              spyglass) → Detective
+            </li>
+            <li>
+              <b className="text-foreground">Open empty palm</b> (flat hand, nothing special) →
+              Citizen
             </li>
           </ul>
         </div>
@@ -114,7 +123,8 @@ export function GhostSignalsGuide({
         )}
         <ol className="space-y-2 text-sm text-muted-foreground">
           <li className="rounded-xl border border-border bg-secondary/30 p-3">
-            <b className="text-foreground">1.</b> Show the message sign.
+            <b className="text-foreground">1.</b> Do the{" "}
+            <b className="text-foreground">note-writing gesture on your palm</b>.
           </li>
           <li className="rounded-xl border border-border bg-secondary/30 p-3">
             <b className="text-foreground">2.</b> Hold up <b className="text-foreground">1</b>,{" "}
