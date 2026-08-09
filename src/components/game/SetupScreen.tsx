@@ -2,7 +2,59 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ROLE_META, type Role, type Player, type Settings } from "@/lib/game";
-import { X, Plus, Shuffle, Play, BookOpen } from "lucide-react";
+import { X, Plus, Shuffle, Play, BookOpen, Check, Clock, Volume2, Undo2 } from "lucide-react";
+
+function fmtSeconds(s: number) {
+  if (s <= 0) return "Off";
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m > 0 ? `${m}:${String(sec).padStart(2, "0")}` : `${sec}s`;
+}
+
+function SettingToggle({
+  checked,
+  onChange,
+  icon,
+  title,
+  description,
+}: {
+  checked: boolean;
+  onChange: (next: boolean) => void;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left transition-colors ${
+        checked
+          ? "border-primary/40 bg-primary/10"
+          : "border-border bg-background/40 hover:border-border hover:bg-secondary/50"
+      }`}
+    >
+      <span
+        className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border ${
+          checked
+            ? "border-primary bg-primary text-primary-foreground"
+            : "border-muted-foreground/40 text-transparent"
+        }`}
+      >
+        <Check className="size-3.5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+          {icon}
+          {title}
+        </span>
+        <span className="mt-0.5 block text-xs text-muted-foreground">{description}</span>
+      </span>
+    </button>
+  );
+}
 
 const ROLES: Role[] = ["mafia", "detective", "doctor", "citizen"];
 
@@ -118,52 +170,81 @@ export function SetupScreen({
           ))}
         </ul>
 
-        <div className="mt-6 rounded-lg border border-border bg-secondary/30 p-4">
-          <h3 className="text-lg">Game settings</h3>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {(
-              [
-                ["mafiaTimer", "Mafia wake timer (s)"],
-                ["callTimer", "Number call timer (s)"],
-                ["discussionTimer", "Discussion timer (s)"],
-                ["voteTimer", "Voting timer (s)"],
-              ] as const
-            ).map(([key, label]) => (
-              <label key={key} className="text-xs text-muted-foreground">
-                {label}
-                <input
-                  type="number"
-                  min={0}
-                  value={settings[key]}
-                  onChange={(e) =>
-                    setSettings({ ...settings, [key]: Math.max(0, Number(e.target.value)) })
-                  }
-                  className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1 text-center font-display text-base text-foreground"
-                />
-              </label>
-            ))}
+        <div className="mt-6 space-y-4 rounded-lg border border-border bg-secondary/30 p-4">
+          <div>
+            <h3 className="font-display text-lg">Game settings</h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Tune timers and host options before dealing roles.
+            </p>
           </div>
-          <div className="mt-3 flex flex-wrap gap-4 text-sm">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
+
+          <div>
+            <div className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <Clock className="size-3.5" />
+              Timers
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(
+                [
+                  ["mafiaTimer", "Mafia wake", "Joint kill decision"],
+                  ["callTimer", "Number call", "Per secret number"],
+                  ["discussionTimer", "Discussion", "Day talk time"],
+                  ["voteTimer", "Voting", "Elimination vote"],
+                ] as const
+              ).map(([key, label, hint]) => (
+                <label
+                  key={key}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background/50 px-3 py-2.5"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm text-foreground">{label}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {hint} · {fmtSeconds(settings[key])}
+                    </span>
+                  </span>
+                  <Input
+                    type="number"
+                    min={0}
+                    inputMode="numeric"
+                    value={settings[key]}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        [key]: Math.max(0, Number(e.target.value) || 0),
+                      })
+                    }
+                    className="h-9 w-20 shrink-0 text-center font-display"
+                    aria-label={`${label} in seconds`}
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">Set any timer to 0 to turn it off.</p>
+          </div>
+
+          <div>
+            <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Options
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <SettingToggle
                 checked={settings.sound}
-                onChange={(e) => setSettings({ ...settings, sound: e.target.checked })}
+                onChange={(sound) => setSettings({ ...settings, sound })}
+                icon={<Volume2 className="size-3.5 text-primary" />}
+                title="Timer sounds"
+                description="Tick countdown and buzz when time’s up"
               />
-              Tick &amp; buzz sounds
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
+              <SettingToggle
                 checked={settings.allowRoleGuessReverse}
-                onChange={(e) =>
-                  setSettings({ ...settings, allowRoleGuessReverse: e.target.checked })
+                onChange={(allowRoleGuessReverse) =>
+                  setSettings({ ...settings, allowRoleGuessReverse })
                 }
+                icon={<Undo2 className="size-3.5 text-primary" />}
+                title="Undo role guesses"
+                description="Let the host reverse a ghost’s one-time guess"
               />
-              Allow undoing a role guess
-            </label>
+            </div>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">Set a timer to 0 to disable it.</p>
         </div>
 
         <Button className="mt-6 w-full" size="lg" disabled={names.length < 4} onClick={onCreate}>

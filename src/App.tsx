@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { SetupScreen } from "@/components/game/SetupScreen";
 import { HowToPlay } from "@/components/game/HowToPlay";
 import { RosterPanel } from "@/components/game/RosterPanel";
@@ -21,7 +31,8 @@ import {
   type Game,
   type Role,
 } from "@/lib/game";
-import { BookOpen, MonitorPlay, RotateCcw, ScrollText } from "lucide-react";
+import { setSoundMuted } from "@/lib/sound";
+import { BookOpen, MonitorPlay, RotateCcw, ScrollText, Volume2, VolumeX } from "lucide-react";
 
 type PreGameTab = "host" | "howto";
 
@@ -34,6 +45,9 @@ export default function App() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [loaded, setLoaded] = useState(false);
   const [preGameTab, setPreGameTab] = useState<PreGameTab>("host");
+  const [confirmNewGame, setConfirmNewGame] = useState(false);
+
+  const soundOn = game?.settings.sound ?? settings.sound;
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -60,6 +74,17 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ game, dayResolved, settings }));
   }, [game, dayResolved, settings, loaded]);
 
+  useEffect(() => {
+    setSoundMuted(!soundOn);
+  }, [soundOn]);
+
+  const toggleSound = () => {
+    const next = !soundOn;
+    setSettings((s) => ({ ...s, sound: next }));
+    setGame((g) => (g ? { ...g, settings: { ...g.settings, sound: next } } : g));
+    setDraft((d) => (d ? { ...d, settings: { ...d.settings, sound: next } } : d));
+  };
+
   const update = (fn: (g: Game) => Game) => setGame((g) => (g ? fn(g) : g));
 
   const resetAll = () => {
@@ -72,7 +97,7 @@ export default function App() {
   /* ---------- setup ---------- */
   if (!game) {
     return (
-      <Shell>
+      <Shell soundOn={soundOn} onToggleSound={toggleSound}>
         <div className="mb-6 flex justify-center">
           <div className="inline-flex rounded-lg border border-border bg-secondary/40 p-1">
             <button
@@ -318,7 +343,7 @@ export default function App() {
   const aliveTotal = game.players.filter((p) => p.alive).length;
 
   return (
-    <Shell>
+    <Shell soundOn={soundOn} onToggleSound={toggleSound}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2 text-xs">
           <Stat label="Round" value={String(game.round)} />
@@ -326,10 +351,47 @@ export default function App() {
           <Stat label="Mafia left" value={String(aliveMafia)} />
           <Stat label="Ghosts" value={String(game.players.length - aliveTotal)} />
         </div>
-        <Button variant="ghost" size="sm" onClick={resetAll}>
-          <RotateCcw className="size-4" /> New game
-        </Button>
+        <div className="flex flex-wrap items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleSound}
+            aria-pressed={!soundOn}
+            aria-label={soundOn ? "Mute timer sounds" : "Unmute timer sounds"}
+            title={soundOn ? "Mute sounds" : "Unmute sounds"}
+          >
+            {soundOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+            {soundOn ? "Sound on" : "Muted"}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setConfirmNewGame(true)}>
+            <RotateCcw className="size-4" /> New game
+          </Button>
+        </div>
       </div>
+
+      <AlertDialog open={confirmNewGame} onOpenChange={setConfirmNewGame}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Start a new game?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This clears the current round, roster, and game log. You’ll go back to setup and need
+              to deal roles again. This can’t be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep playing</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                resetAll();
+                setConfirmNewGame(false);
+              }}
+            >
+              Yes, new game
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {game.winner && (
         <div className="mb-4 rounded-xl border border-primary/50 bg-primary/10 p-5 text-center">
@@ -417,9 +479,29 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({
+  children,
+  soundOn,
+  onToggleSound,
+}: {
+  children: React.ReactNode;
+  soundOn: boolean;
+  onToggleSound: () => void;
+}) {
   return (
-    <main className="min-h-screen px-4 py-8">
+    <main className="relative min-h-screen px-4 py-8">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onToggleSound}
+        className="absolute right-3 top-3 z-10 sm:right-5 sm:top-5"
+        aria-pressed={!soundOn}
+        aria-label={soundOn ? "Mute timer sounds" : "Unmute timer sounds"}
+        title={soundOn ? "Mute sounds" : "Unmute sounds"}
+      >
+        {soundOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
+      </Button>
       <header className="mx-auto mb-8 max-w-5xl text-center">
         <img
           src={`${import.meta.env.BASE_URL}logo.png`}
