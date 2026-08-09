@@ -136,7 +136,7 @@ function Hook() {
   return (
     <div className="space-y-5 text-center">
       <img
-        src="/logo.png"
+        src={`${import.meta.env.BASE_URL}logo.png`}
         alt=""
         className="mx-auto size-24 rounded-xl object-cover shadow-[var(--shadow-glow)]"
         width={96}

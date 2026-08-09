@@ -7,6 +7,8 @@ import tailwindcss from "@tailwindcss/vite";
 const root = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  // GitHub Pages project site: https://cybertron15.github.io/mafia-console/
+  base: "/mafia-console/",
   server: {
     host: "::",
     port: 8080,

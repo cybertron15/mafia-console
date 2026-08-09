@@ -422,7 +422,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <main className="min-h-screen px-4 py-8">
       <header className="mx-auto mb-8 max-w-5xl text-center">
         <img
-          src="/logo.png"
+          src={`${import.meta.env.BASE_URL}logo.png`}
           alt="Mafia: The Afterlife"
           className="mx-auto size-28 rounded-2xl object-cover shadow-[var(--shadow-glow)] sm:size-36"
           width={144}
