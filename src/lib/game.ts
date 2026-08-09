@@ -82,7 +82,8 @@ export function shuffle<T>(arr: T[]): T[] {
 export function suggestedRoles(count: number): Role[] {
   const mafia = Math.max(1, Math.floor(count / 4));
   const detective = count >= 5 ? 1 : 0;
-  const doctor = count >= 6 ? 1 : 0;
+  // Doctor from 5+ so tables with a Detective usually get a save too
+  const doctor = count >= 5 ? 1 : 0;
   const roles: Role[] = [
     ...Array<Role>(mafia).fill("mafia"),
     ...Array<Role>(detective).fill("detective"),

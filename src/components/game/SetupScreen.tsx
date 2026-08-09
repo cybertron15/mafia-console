@@ -34,6 +34,7 @@ export function SetupScreen({
   onOpenHowTo?: () => void;
 }) {
   const [value, setValue] = useState("");
+  const [dupNote, setDupNote] = useState<string | null>(null);
 
   const add = () => {
     const parts = value
@@ -41,7 +42,27 @@ export function SetupScreen({
       .map((s) => s.trim())
       .filter(Boolean);
     if (!parts.length) return;
-    setNames([...names, ...parts]);
+
+    const taken = new Set(names.map((n) => n.toLowerCase()));
+    const unique: string[] = [];
+    const dups: string[] = [];
+
+    for (const name of parts) {
+      const key = name.toLowerCase();
+      if (taken.has(key)) {
+        dups.push(name);
+        continue;
+      }
+      taken.add(key);
+      unique.push(name);
+    }
+
+    if (unique.length) setNames([...names, ...unique]);
+    setDupNote(
+      dups.length
+        ? `Skipped duplicate name${dups.length > 1 ? "s" : ""}: ${dups.join(", ")}`
+        : null,
+    );
     setValue("");
   };
 
@@ -64,7 +85,10 @@ export function SetupScreen({
         <div className="mt-4 flex gap-2">
           <Input
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+              setValue(e.target.value);
+              if (dupNote) setDupNote(null);
+            }}
             onKeyDown={(e) => e.key === "Enter" && add()}
             placeholder="Rahul, Priya, Akash…"
           />
@@ -72,6 +96,7 @@ export function SetupScreen({
             <Plus className="size-4" /> Add
           </Button>
         </div>
+        {dupNote && <p className="mt-2 text-xs text-destructive">{dupNote}</p>}
 
         <ul className="mt-5 grid gap-2 sm:grid-cols-2">
           {names.map((n, i) => (
@@ -170,7 +195,31 @@ export function SetupScreen({
         </div>
       </div>
 
-      <div className="mt-5 space-y-2">
+      <p className="mt-4 text-xs text-muted-foreground">
+        Dealt:{" "}
+        {(
+          [
+            ["mafia", "Mafia"],
+            ["detective", "Detective"],
+            ["doctor", "Doctor"],
+            ["citizen", "Citizen"],
+          ] as const
+        )
+          .map(([role, label]) => {
+            const n = draft.filter((p) => p.role === role).length;
+            return n ? `${n} ${label}` : null;
+          })
+          .filter(Boolean)
+          .join(" · ")}
+        {!draft.some((p) => p.role === "doctor") && (
+          <span className="text-doctor">
+            {" "}
+            · No Doctor — tap Doctor on a player if you want night saves
+          </span>
+        )}
+      </p>
+
+      <div className="mt-3 space-y-2">
         {draft.map((p) => (
           <div
             key={p.id}

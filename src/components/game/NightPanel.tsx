@@ -143,12 +143,18 @@ export function NightPanel({
   };
 
   const detectiveTarget = byId(game.night.detectiveTarget);
-  const hasDetective = alive.some((p) => p.role === "detective");
-  const hasDoctor = alive.some((p) => p.role === "doctor");
+  const livingDoctor = alive.find((p) => p.role === "doctor");
+  const livingDetective = alive.find((p) => p.role === "detective");
+  const gameHasDoctor = game.players.some((p) => p.role === "doctor");
+  const gameHasDetective = game.players.some((p) => p.role === "detective");
   const allCalled = callOrder.length > 0 && calledIndex >= callOrder.length;
   const currentNum = callOrder[calledIndex];
   const currentPlayer =
     currentNum != null ? game.players.find((p) => p.number === currentNum) : null;
+  const highlightingDoctor =
+    !!currentPlayer?.alive && currentPlayer.role === "doctor" && !allCalled;
+  const highlightingDetective =
+    !!currentPlayer?.alive && currentPlayer.role === "detective" && !allCalled;
 
   return (
     <section className="panel p-5">
@@ -348,34 +354,71 @@ export function NightPanel({
         )}
       </div>
 
-      <div className="mt-5 space-y-5">
-        {hasDoctor && (
-          <TargetPicker
-            label="❤️ Doctor save (point — you thumbs up / down)"
-            players={alive}
-            value={game.night.doctorTarget}
-            onChange={(id) => setNight({ doctorTarget: id })}
-            isDisabled={(p) => p.id === game.lastDoctorTarget}
-            disabledNote="Protected last night"
-          />
-        )}
-        {hasDetective && (
-          <div>
-            <TargetPicker
-              label="🔎 Detective check (point — you thumbs up / down)"
-              players={alive}
-              value={game.night.detectiveTarget}
-              onChange={(id) => setNight({ detectiveTarget: id })}
-            />
-            {detectiveTarget && (
-              <p className="mt-2 rounded-md border border-detective/40 bg-detective/10 px-3 py-2 text-sm text-detective">
-                Whisper: {detectiveTarget.name} is{" "}
-                <b>{detectiveTarget.role === "mafia" ? "MAFIA" : "NOT Mafia"}</b>
+      {/* 3. Doctor / Detective — always visible once Mafia has been called */}
+      {mafiaCalled && (
+        <div className="mt-4 space-y-3">
+          <p className="text-sm font-medium">3. Record Doctor & Detective</p>
+          <p className="text-xs text-muted-foreground">
+            Mark these when their numbers are called (or anytime before you resolve the night).
+          </p>
+
+          <div
+            className={`rounded-lg border p-4 transition-shadow ${
+              highlightingDoctor
+                ? "border-doctor bg-doctor/10 shadow-[var(--shadow-glow)]"
+                : "border-doctor/35 bg-doctor/5"
+            }`}
+          >
+            {livingDoctor ? (
+              <TargetPicker
+                label={`❤️ Doctor save — ${livingDoctor.name} (#${livingDoctor.number}) points; you thumbs up / down`}
+                players={alive}
+                value={game.night.doctorTarget}
+                onChange={(id) => setNight({ doctorTarget: id })}
+                isDisabled={(p) => p.id === game.lastDoctorTarget}
+                disabledNote="Protected last night"
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {gameHasDoctor
+                  ? "❤️ Doctor is dead — no save tonight."
+                  : "❤️ No Doctor in this game. Assign one on the deal screen (or add a 5th+ player and re-deal) if you want saves."}
               </p>
             )}
           </div>
-        )}
-      </div>
+
+          <div
+            className={`rounded-lg border p-4 transition-shadow ${
+              highlightingDetective
+                ? "border-detective bg-detective/10 shadow-[var(--shadow-glow)]"
+                : "border-detective/35 bg-detective/5"
+            }`}
+          >
+            {livingDetective ? (
+              <div>
+                <TargetPicker
+                  label={`🔎 Detective check — ${livingDetective.name} (#${livingDetective.number}) points; you thumbs up / down`}
+                  players={alive}
+                  value={game.night.detectiveTarget}
+                  onChange={(id) => setNight({ detectiveTarget: id })}
+                />
+                {detectiveTarget && (
+                  <p className="mt-2 rounded-md border border-detective/40 bg-detective/10 px-3 py-2 text-sm text-detective">
+                    Whisper: {detectiveTarget.name} is{" "}
+                    <b>{detectiveTarget.role === "mafia" ? "MAFIA" : "NOT Mafia"}</b>
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {gameHasDetective
+                  ? "🔎 Detective is dead — no check tonight."
+                  : "🔎 No Detective in this game."}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       <Button
         className="mt-6 w-full"
