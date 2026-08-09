@@ -1,4 +1,13 @@
 let ctx: AudioContext | null = null;
+let muted = false;
+
+export function setSoundMuted(next: boolean) {
+  muted = next;
+}
+
+export function isSoundMuted() {
+  return muted;
+}
 
 function audio(): AudioContext | null {
   if (typeof window === "undefined") return null;
@@ -15,6 +24,7 @@ function audio(): AudioContext | null {
 }
 
 function beep(freq: number, duration: number, type: OscillatorType, gain: number) {
+  if (muted) return;
   const ac = audio();
   if (!ac) return;
   const osc = ac.createOscillator();
@@ -34,4 +44,7 @@ export const playBuzz = () => {
   beep(160, 0.5, "sawtooth", 0.18);
   setTimeout(() => beep(120, 0.6, "sawtooth", 0.18), 180);
 };
-export const primeAudio = () => audio();
+export const primeAudio = () => {
+  if (muted) return null;
+  return audio();
+};
